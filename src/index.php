@@ -17,6 +17,7 @@
     $chart->setYTitle("Y Axis");
     $chart->drawGraph();
     $im = $chart->output();
+    $chart->fetchData();
     ?>
     <img src="data:image/x-icon;base64,<?php echo base64_encode($im); ?>"></img>
 </body>

@@ -57,12 +57,34 @@ class Chart {
         $graphOriginY = $this->height - 50;
         $graphWidth = $this->width - 100;
         $graphHeight = $this->height - 100;
+        $fontWidth = imagefontwidth(7);
 
-        $this->drawText($this->xTitle, $graphOriginX + $graphWidth / 2, $this->height - 30);
-        $this->drawTextVertically($this->yTitle, 20, $graphOriginY - $graphHeight / 2);
+        $this->drawText($this->xTitle, ($graphOriginX + $graphWidth / 2) - ($fontWidth * strlen($this->xTitle) / 2), $this->height - 30);
+        $this->drawTextVertically($this->yTitle, 20, ($graphOriginY - $graphHeight / 2) + ($fontWidth * strlen($this->yTitle) / 2));
 
         $this->drawLine($graphOriginX, $graphOriginY, $graphOriginX + $graphWidth, $graphOriginY);
         $this->drawLine($graphOriginX, $graphOriginY, $graphOriginX, $graphOriginY - $graphHeight);
+    }
+
+    public function drawScaleLines() {
+        // Placeholder for future implementation
+    }
+
+    public function fetchData() {
+        $conn = new mysqli("mysql", "bozgi", "hujgnuj", "db");
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+        $stmt = $conn->prepare("SELECT * FROM measurements");
+        $stmt->execute();
+        $result = $stmt->get_result();
+        while ($row = $result->fetch_assoc()) {
+            $this->data[] = $row;
+            foreach ($row as $key => $value) {
+                echo "$key: $value ";
+            }
+            echo "<br>";
+        }
     }
 
     public function output() {
