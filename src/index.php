@@ -1,22 +1,24 @@
-<?php
-header('Content-Type: image/png');
-$im = imagecreatetruecolor(500, 500);
-$r = imagecolorallocate($im, 255, 0, 0);
-$b = imagecolorallocate($im, 0, 0, 0);
-imagefilledrectangle($im, 0, 0, 500, 500, $r);
-imagestringup($im, 7, 200, 200, "Ala miała kota miau", $b);
-imagestringup($im, 7, 200, 200, "Ale Ala zgłodniała" , $b);
-$arr = [$b, $b, $b, $r, $r, $r];
-imagesetstyle($im, $arr);
-imageline($im, 0, 100, 500, 100, $b);
-
-imageline($im, 0, 200, 500, 200, IMG_COLOR_STYLED);
-imagesetstyle($im, $arr);
-
-imageline($im, 0, 202, 500, 202, IMG_COLOR_STYLED);
-imagesetstyle($im, $arr);
-
-imageline($im, 0, 204, 500, 204, IMG_COLOR_STYLED);
-
-imagepng($im);
-?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <?php
+    require 'chart.php';
+    if (!isset($_GET["width"]) || !isset($_GET["height"])) {
+        $_GET["width"] = 500;
+        $_GET["height"] = 500;
+    }
+    $chart = new Chart($_GET["width"], $_GET["height"]);
+    $chart->setXTitle("X Axis");
+    $chart->setYTitle("Y Axis");
+    $chart->drawGraph();
+    $im = $chart->output();
+    ?>
+    <img src="data:image/x-icon;base64,<?php echo base64_encode($im); ?>"></img>
+</body>
+</html>
+    
