@@ -90,9 +90,9 @@ class Chart {
             }
         }
 
-        $valueIncrement = ($this->maxYValue - $this->minYValue) / $this->numYDivisions;
-        for ($i = 0; $i <= $this->numYDivisions; $i++) {
-            $y = $this->graphOriginY - ($i * $this->spacingY);
+        $valueIncrement = ($this->maxYValue - $this->minYValue) / ($this->numYDivisions - 1);
+        for ($i = 0; $i < $this->numYDivisions; $i++) {
+            $y = $this->graphOriginY - (($i + 1) * $this->spacingY);
             $this->drawLine($this->graphOriginX - 5, $y, $this->graphOriginX + 5, $y);
             $value = round($this->minYValue + ($i * $valueIncrement), 2);
             $this->drawText($value, $this->graphOriginX - ($this->fontWidth * strlen($value)) - 5, $y - ($this->fontWidth / 2));
@@ -154,19 +154,21 @@ class Chart {
                 continue;
             }
             $this->lineColor = imagecolorallocate($this->image, 0, 0, 255);
-            imagefilledarc($this->image,
-                $this->graphOriginX + (($i + 1) * $this->spacingX),
-                $this->graphOriginY - (($this->data[$i]['temperature_c'] - $this->minYValue) * ($this->graphHeight / ($this->maxYValue - $this->minYValue))),
-                10, 10, 0, 360, $this->lineColor, IMG_ARC_PIE);
-            imagefilledarc($this->image,
-                $this->graphOriginX + (($i + 2) * $this->spacingX),
-                $this->graphOriginY - (($this->data[$i + 1]['temperature_c'] - $this->minYValue) * ($this->graphHeight / ($this->maxYValue - $this->minYValue))),
-                10, 10, 0, 360, $this->lineColor, IMG_ARC_PIE);
             $x1 = $this->graphOriginX + (($i + 1) * $this->spacingX);
-            $y1 = $this->graphOriginY - (($this->data[$i]['temperature_c'] - $this->minYValue) * ($this->graphHeight / ($this->maxYValue - $this->minYValue)));
+            $y1 = $this->graphOriginY - (($this->data[$i]['temperature_c'] - $this->minYValue) * (($this->graphHeight - $this->spacingY) / ($this->maxYValue - $this->minYValue)) + $this->spacingY);
 
             $x2 = $this->graphOriginX + (($i + 2) * $this->spacingX);
-            $y2 = $this->graphOriginY - (($this->data[$i + 1]['temperature_c'] - $this->minYValue) * ($this->graphHeight / ($this->maxYValue - $this->minYValue)));
+            $y2 = $this->graphOriginY - (($this->data[$i + 1]['temperature_c'] - $this->minYValue) * (($this->graphHeight - $this->spacingY) / ($this->maxYValue - $this->minYValue)) + $this->spacingY);
+
+            imagefilledarc($this->image,
+                $x1,
+                $y1,
+                10, 10, 0, 360, $this->lineColor, IMG_ARC_PIE);
+            imagefilledarc($this->image,
+                $x2,
+                $y2,
+                10, 10, 0, 360, $this->lineColor, IMG_ARC_PIE);
+
             $this->drawLine($x1, $y1, $x2, $y2, $this->lineStyle);
         }
     }
