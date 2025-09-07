@@ -13,11 +13,10 @@
         $_GET["height"] = 500;
     }
     $chart = new Chart($_GET["width"], $_GET["height"]);
-    $chart->setXTitle("X Axis");
-    $chart->setYTitle("Y Axis");
+    $chart->setXTitle("Dzień miesiąca");
+    $chart->setYTitle("Temperatura [°C]");
     $chart->drawGraph();
     $im = $chart->output();
-    $chart->fetchData();
     ?>
     <img src="data:image/x-icon;base64,<?php echo base64_encode($im); ?>"></img>
 </body>
