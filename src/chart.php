@@ -23,6 +23,7 @@ class Chart {
     private $maxYValue;
     private $minYValue;
     private $numYDivisions = 7;
+    private $pointData = [];
 
     public function __construct($width = 500, $height = 500) {
         $this->width = $width;
@@ -115,6 +116,10 @@ class Chart {
         }
     }
 
+    public function getPointData() {
+        return $this->pointData;
+    }
+
     public function fetchData() {
         $conn = new mysqli("mysql", "bozgi", "hujgnuj", "db");
         if ($conn->connect_error) {
@@ -149,6 +154,14 @@ class Chart {
                     $this->graphOriginX + (($i + 1) * $this->spacingX),
                     $this->graphOriginY,
                     10, 10, 0, 360, $this->lineColor, IMG_ARC_PIE);
+                
+                $this->pointData[] = [
+                    'x' => $this->graphOriginX + (($i + 1) * $this->spacingX),
+                    'y' => $this->graphOriginY,
+                    'day_of_month' => $this->data[$i]['day_of_month'],
+                    'temperature_c' => $this->data[$i]['temperature_c'],
+                    'status' => $this->data[$i]['status']
+                ];
             }
             if (!isset($this->data[$i]['temperature_c']) || !isset($this->data[$i + 1]['temperature_c'])) {
                 continue;
@@ -169,6 +182,13 @@ class Chart {
                 $y2,
                 10, 10, 0, 360, $this->lineColor, IMG_ARC_PIE);
 
+            $this->pointData[] = [
+                'x' => $x1,
+                'y' => $y1,
+                'day_of_month' => $this->data[$i]['day_of_month'],
+                'temperature_c' => $this->data[$i]['temperature_c'],
+                'status' => $this->data[$i]['status']
+            ];
             $this->drawLine($x1, $y1, $x2, $y2, $this->lineStyle);
         }
     }
