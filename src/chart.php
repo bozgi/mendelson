@@ -138,7 +138,7 @@ class Chart {
         $this->spacingX = $this->graphWidth / ($dataLength);
         $this->spacingY = $this->graphHeight / $this->numYDivisions;
 
-        echo '<pre>'; print_r($this->data); echo '</pre>';
+        // echo '<pre>'; print_r($this->data); echo '</pre>';
     }
 
     public function plotData() {

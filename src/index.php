@@ -54,7 +54,7 @@
       <p>
         <label>
           Temperature:
-          <input type="number" step="0.1" name="temperature" id="temperature">
+          <input type="number" step="0.01" name="temperature" id="temperature">
         </label>
       </p>
       <p>
@@ -68,8 +68,8 @@
         </label>
       </p>
       <menu>
-        <button value="cancel">Cancel</button>
-        <button id="saveBtn" value="save">Save</button>
+        <button type="button" id="cancel">Cancel</button>
+        <button type="submit" id="submit">Submit</button>
       </menu>
     </form>
   </dialog>
@@ -77,6 +77,8 @@
   <script>
     const dialog = document.getElementById('editDialog');
     const form = document.getElementById('editForm');
+    const cancel = document.getElementById('cancel');
+    const submit = document.getElementById('submit');
 
     document.querySelectorAll('area').forEach(item => {
       item.addEventListener('click', event => {
@@ -85,10 +87,41 @@
         document.getElementById('dayDisplay').textContent = item.dataset.day;
         document.getElementById('temperature').value = item.dataset.temperature || '';
         document.getElementById('status').value = item.dataset.status;
-
         dialog.showModal();
       });
     });
+
+    cancel.addEventListener('click', () => dialog.close());
+
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const day = document.getElementById('day').value;
+      const temperature = document.getElementById('temperature').value;
+      const status = document.getElementById('status').value;
+
+      fetch('api/updateGraph.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ day, temperature, status })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          location.reload();
+        } else {
+          alert('Error updating measurement: ' + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating measurement');
+      });
+
+      dialog.close();
+    });
+
   </script>
 </body>
 </html>
