@@ -19,32 +19,9 @@
   </style>
 </head>
 <body>
-  <?php
-  require 'chart.php';
-  if (!isset($_GET["width"]) || !isset($_GET["height"])) {
-      $_GET["width"] = 500;
-      $_GET["height"] = 500;
-  }
-  $chart = new Chart($_GET["width"], $_GET["height"]);
-  $chart->setXTitle("Dzień miesiąca");
-  $chart->setYTitle("Temperatura [°C]");
-  $chart->drawGraph();
-  $im = $chart->output();
-  ?>
-  <map name="graph">
-    <?php
-      $chart->getPointData();
-      foreach ($chart->getPointData() as $point) {
-          echo '<area shape="circle" coords="'.$point['x'].','.$point['y'].',5"'
-              .' alt="'.$point['status'].'"'
-              .' title="'.$point['status'].'"'
-              .' data-day="'.$point['day_of_month'].'"'
-              .' data-temperature="'.$point['temperature_c'].'"'
-              .' data-status="'.$point['status'].'">';
-      }
-    ?>
+  <map name="graph-map">
   </map>
-  <img src="data:image/x-icon;base64,<?php echo base64_encode($im); ?>" usemap="#graph">
+  <img src="" usemap="#graph-map" id="graph">
 
   <dialog id="editDialog">
     <form method="dialog" id="editForm">
@@ -75,21 +52,37 @@
   </dialog>
 
   <script>
+    const graphImg = document.getElementById('graph');
+    // data:image/png;base64
+
+    const searchParams = new URLSearchParams(window.location.search);
+
+    fetch('api/getGraph.php?' + searchParams.toString())
+      .then(response => response.json())
+      .then(data => {
+        graphImg.src = `data:image/png;base64,${data.image}`;
+        const map = document.querySelector('map[name="graph-map"]');
+        data.points.forEach(point => {
+          const area = document.createElement('area');
+          area.shape = 'circle';
+          area.coords = `${point.x},${point.y},5`;
+          area.dataset.day = point.day_of_month;
+          area.dataset.temperature = point.temperature_c;
+          area.dataset.status = point.status;
+          map.appendChild(area);
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching graph or point data:', error);
+      })
+      .finally(() => {
+        attachAreaListeners();
+      });
+
     const dialog = document.getElementById('editDialog');
     const form = document.getElementById('editForm');
     const cancel = document.getElementById('cancel');
     const submit = document.getElementById('submit');
-
-    document.querySelectorAll('area').forEach(item => {
-      item.addEventListener('click', event => {
-        event.preventDefault();
-        document.getElementById('day').value = item.dataset.day;
-        document.getElementById('dayDisplay').textContent = item.dataset.day;
-        document.getElementById('temperature').value = item.dataset.temperature || '';
-        document.getElementById('status').value = item.dataset.status;
-        dialog.showModal();
-      });
-    });
 
     cancel.addEventListener('click', () => dialog.close());
 
@@ -108,11 +101,11 @@
       })
       .then(response => response.json())
       .then(data => {
-        if (data.success) {
-          location.reload();
-        } else {
-          alert('Error updating measurement: ' + data.error);
+        if (!data.success) {
+          console.error('Error updating measurement: ' + data.message);
+          return;
         }
+        reloadGraph(); // iso 88559-2
       })
       .catch(error => {
         console.error('Error:', error);
@@ -121,6 +114,49 @@
 
       dialog.close();
     });
+
+    function attachAreaListeners() {
+      const areas = document.querySelectorAll('area');
+      areas.forEach(area => {
+        area.addEventListener('click', event => {
+          const day = area.dataset.day;
+          const temperature = area.dataset.temperature;
+          const status = area.dataset.status;
+
+          document.getElementById('day').value = day;
+          document.getElementById('dayDisplay').textContent = day;
+          document.getElementById('temperature').value = temperature !== 'n/a' ? temperature : '';
+          document.getElementById('status').value = status;
+
+          dialog.showModal();
+        });
+      });
+    }
+
+    function reloadGraph() {
+      fetch('api/getGraph.php?' + searchParams.toString() + "&" + new Date().getTime())
+        .then(response => response.json())
+        .then(data => {
+          graphImg.src = `data:image/png;base64,${data.image}`;
+          const map = document.querySelector('map[name="graph-map"]');
+          map.innerHTML = '';
+          data.points.forEach(point => {
+            const area = document.createElement('area');
+            area.shape = 'circle';
+            area.coords = `${point.x},${point.y},5`;
+            area.dataset.day = point.day_of_month;
+            area.dataset.temperature = point.temperature_c;
+            area.dataset.status = point.status;
+            map.appendChild(area);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching graph or point data:', error);
+        })
+        .finally(() => {
+          attachAreaListeners();
+        });
+    }
 
   </script>
 </body>
