@@ -105,7 +105,7 @@
           console.error('Error updating measurement: ' + data.message);
           return;
         }
-        reloadGraph(); // iso 88559-2
+        reloadGraph();
       })
       .catch(error => {
         console.error('Error:', error);

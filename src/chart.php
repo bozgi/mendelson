@@ -42,11 +42,11 @@ class Chart {
     }
 
     public function setXTitle($title) {
-        $this->xTitle = $title;
+        $this->xTitle = mb_convert_encoding($title, 'ISO-8859-2', 'UTF-8');
     }
 
     public function setYTitle($title) {
-        $this->yTitle = $title;
+        $this->yTitle = mb_convert_encoding($title, 'ISO-8859-2', 'UTF-8');
     }
 
     public function setLineStyle($style) {
