@@ -21,7 +21,7 @@
 <body>
   <map name="graph-map">
   </map>
-  <img src="" usemap="#graph-map" id="graph">
+  <img src="#" usemap="#graph-map" id="graph" alt="Graph">
 
   <dialog id="editDialog">
     <form method="dialog" id="editForm">
@@ -44,10 +44,10 @@
           </select>
         </label>
       </p>
-      <menu>
+      <div>
         <button type="button" id="cancel">Cancel</button>
         <button type="submit" id="submit">Submit</button>
-      </menu>
+      </div>
     </form>
   </dialog>
 
@@ -153,9 +153,6 @@
         .catch(error => {
           console.error('Error fetching graph or point data:', error);
         })
-        .finally(() => {
-          attachAreaListeners();
-        });
     }
 
   </script>
