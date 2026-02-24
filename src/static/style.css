@@ -1,0 +1,100 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    color: white;
+    height: 20%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: stretch;
+    align-items: stretch;
+    background-image: url("background.png");
+    background-size: cover;
+    background-color: rgba(0, 0, 0, 0.3);
+    background-blend-mode: darken;
+    background-position: center;
+}
+
+nav, .login-bar, .logo-bar {
+    flex: 1;
+}
+
+nav {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 0 20px;
+}
+
+nav div {
+    background-color: rgba(0, 0, 0, 0.5);
+    flex: 1;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+main {
+    height: 75%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+footer {
+    height: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+img {
+    height: 150px;
+    width: 150px;
+    object-fit: contain;
+    border-radius: 100%;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center; 
+    gap: 10px;
+    width: 300px;
+}
+
+form * {
+    flex: 1;
+    width: 100%;
+}
+
+.login-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+footer {
+    color: white;
+    font-size: 14px;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}

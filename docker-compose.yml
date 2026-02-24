@@ -14,7 +14,7 @@ services:
       - DB_PORT=3306
       - DB_USER=bozgi
       - DB_PASSWORD=hujgnuj
-      - DB_NAME=db  
+      - DB_NAME=db
   mysql:
     image: mysql:latest
     ports:
