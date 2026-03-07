@@ -10,7 +10,7 @@
     /* max-height: 100vh; */
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    /* justify-content: space-between; */
 }
 
 html, body {
@@ -31,17 +31,15 @@ html, body {
 
 header {
     color: white;
-    height: 20%;
+    height: 300px;
     display: flex;
     flex-direction: column;
     gap: 20px;
-    justify-content: stretch;
-    align-items: stretch;
-    background-image: url("background.png");
-    background-size: cover;
-    background-color: rgba(0, 0, 0, 0.3);
-    background-blend-mode: darken;
-    background-position: center;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 100vw;
+    background-color: black;
 }
 
 nav, .login-bar, .logo-bar {
@@ -54,11 +52,20 @@ nav, .login-bar, .logo-bar {
     align-items: center;
 }
 
+.login-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0 20px;
+}
+
 .active {
     display: flex !important;
 }
 
 nav {
+    height: 150px;
     display: flex;
     justify-content: space-evenly;
     align-items: center;
@@ -75,17 +82,12 @@ nav div {
 }
 
 main {
+    padding: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-footer {
-    height: 5%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
 
 img {
     height: 150px;
@@ -124,6 +126,24 @@ footer {
     justify-content: center;
     align-items: center;
     flex-direction: column;
+    justify-self: end;
+    margin: auto 0 0 0;
+    height: 40px;
+}
+
+.header-background {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: stretch;
+    height: 100%;
+    max-width: 100vw;
+    width: 2000px;
+    background-image: url("background.png");
+    background-size: cover;
+    background-color: rgba(0, 0, 0, 0.3);
+    background-blend-mode: darken;
+    background-position: center;
 }
 
 .login-box-options {

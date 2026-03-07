@@ -6,6 +6,7 @@
     <title>Logowanie</title>
     <link rel="stylesheet" href="static/style.css">
     <script src="static/script.js" defer></script>
+    <script src="https://kit.fontawesome.com/7cfa22db6e.js" crossorigin="anonymous"></script>
 </head>
 <body>
     <div class="container">
@@ -19,12 +20,16 @@
             </form>
         </dialog>
         <header>
-            <div class="login-bar"></div>
-            <div class="logo-bar"><strong>Wiggatronics</strong></div>
-            <nav>
-                <div class="option selected login-button">Zaloguj</div>
-                <div class="option register-button">Utwórz konto</div>
-            </nav>
+            <div class="header-background">
+                <div class="login-bar">
+                    <div><i class="fa-solid fa-arrow-right-to-bracket"></i>Zaloguj się</div>
+                </div>
+                <div class="logo-bar"><strong>Wiggatronics</strong></div>
+                <nav>
+                    <div class="option selected login-button">Zaloguj</div>
+                    <div class="option register-button">Utwórz konto</div>
+                </nav>
+            </div>
         </header>
         <main>
             <div class="login-box active">
