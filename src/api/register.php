@@ -1,10 +1,4 @@
 <?php
-include "../phpmailer.php";
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
-use PHPMailer\PHPMailer\Exception;
-$mysqli = new mysqli("mysql", "bozgi", "hujgnuj", "db");
-
 $errors = [];
 
 $data = json_decode(file_get_contents('php://input'), true);
@@ -34,40 +28,44 @@ if (isset($data["email"]) && isset($data["password"])   ) {
         return;
     }
 
-    // echo json_encode([
-    //     "success" => true
-    // ]);
+    require '../db.php';
+    $operation_hash = uniqid("op_", true);
+    $stmt = $conn->prepare("INSERT INTO users (email, password) VALUES (?, ?)");
+    $password_hash = password_hash($password, PASSWORD_BCRYPT);
+    $stmt->bind_param("ss", $email, $password_hash);
+    $stmt->execute();
 
-    $mail = new PHPMailer(true);
-    $mail->isSMTP();
-    $mail->Host = 'smtp.gmail.com';
-    $mail->SMTPAuth = true;
-    $mail->Username = 'oskaros040@gmail.com';
-    $mail->Password = 'dkcm ntfd sahr ribu';
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port = 587;
-    $mail->SMTPDebug = 2; // shows server conversation
-    $mail->Debugoutput = 'html';
-    $mail->CharSet = 'UTF-8';
-    $mail->setFrom('oskaros040@gmail.com', 'Zespół Wykresiki');
-    $mail->addAddress($email, 'User');
-    // echo $email;
+    $user_id = $conn->insert_id;
 
-    $mail->isHTML(false);
-    $mail->Subject = 'Test mail';
-    $mail->Body = 'Hello!';
-
-    if (!$mail->send()) {
+    $stmt = $conn->prepare(
+        "INSERT INTO operations (hash, account_id, operation_type) VALUES (?, ?, 'REGISTER')"
+    );
+    if (!$stmt) {
+        die("Prepare failed: " . $conn->error);
+    }
+    $stmt->bind_param("si", $operation_hash, $user_id);
+    if (!$stmt->execute()) {
         echo json_encode([
             "success" => false,
-            "message" => "Failed to send email"
+            "message" => "Following error occurred: " . $stmt->error
+        ]);
+        return;
+    }
+
+    require '../mailer.php';
+    $activation_link = "http://localhost:8000/login.php?operation=" . $operation_hash;
+    $email_body = "Dziękujemy za rejestrację! Kliknij w poniższy link, aby aktywować swoje konto: <a href='" . $activation_link . "'>Aktywuj konto</a>";
+    if (!sendEmail($email, "Aktywacja konta", $email_body)) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Nie można wysłać e-maila z linkiem aktywacyjnym."
         ]);
         return;
     } else {
         echo json_encode([
             "success" => true,
-            "message" => "Registration successful, email sent"
+            "message" => "Rejestracja przebiegła pomyślnie! Sprawdź swoją skrzynkę e-mail, aby aktywować konto."
         ]);
+        return;
     }
-
 }

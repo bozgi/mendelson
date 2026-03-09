@@ -17,7 +17,7 @@ html, body {
     height: 100%;
 }
 
-.login-box, .register-box {
+.login-box, .register-box, .restore-email, .restore-password, .restore-confirm-password {
     display: none;
 }
 

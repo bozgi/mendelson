@@ -121,10 +121,7 @@ class Chart {
     }
 
     public function fetchData() {
-        $conn = new mysqli("mysql", "bozgi", "hujgnuj", "db");
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
+        require 'db.php';
         $stmt = $conn->prepare("SELECT * FROM measurements ORDER BY day_of_month ASC");
         $stmt->execute();
         $result = $stmt->get_result();
