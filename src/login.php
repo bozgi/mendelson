@@ -1,7 +1,43 @@
 <?php
+session_start();
+if (isset($_SESSION['id'])) {
+    header("Location: dashboard.php");
+    exit;
+}
+
+$login_error = NULL;
+
+if (isset($_POST['email']) && isset($_POST['password'])) {
+    require 'db.php';
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+    if ($stmt = $conn->prepare("SELECT id, password, active FROM users WHERE email = ?")) {
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows == 0) {
+            $login_error = "Nieprawidłowy email lub hasło";
+        } else {
+            $user = $result->fetch_assoc();
+            if (!password_verify($password, $user['password'])) {
+                $login_error = "Nieprawidłowy email lub hasło";
+            } else if ($user['active'] == 0) {
+                $login_error = "Konto nieaktywne. Sprawdź swoją skrzynkę pocztową.";
+            } else {
+                $_SESSION['id'] = $user['id'];
+                $_SESSION['email'] = $email;
+                header("Location: dashboard.php");
+                exit;
+            }
+        }
+    } else {
+        $login_error = "Błąd bazy danych: " . $conn->error;
+    }
+}
+
 $body = "";
 $operation_type = "";
-$operation_hash = $_GET["operation"];
+$operation_hash = "";
 
 function handleOperation() {
     require 'db.php';
@@ -71,6 +107,7 @@ function handleOperation() {
 }
 
 if (isset($_GET["operation"])) {
+    $operation_hash = $_GET["operation"];
     handleOperation();
 }
 
@@ -90,6 +127,16 @@ if (isset($_GET["operation"])) {
             echo "<script>
                 window.onload = function() {
                     const dialog = document.getElementById('editDialog');
+                    dialog.showModal();
+                }
+            </script>";
+        }
+        if ($login_error) {
+            echo "<script>
+                window.onload = function() {
+                    const dialog = document.getElementById('editDialog');
+                    const info = document.querySelector('.dialog-info');
+                    info.textContent = '$login_error';
                     dialog.showModal();
                 }
             </script>";

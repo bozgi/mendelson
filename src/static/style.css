@@ -86,6 +86,7 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 
 
@@ -162,4 +163,53 @@ dialog {
 }
 dialog::backdrop {
     background: rgba(0,0,0,0.4);
+}
+
+.graphs-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+#graph {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    max-width: 90vw;
+    max-height: 90vh;
+}
+
+area {
+    cursor: pointer;
+}
+
+.graph-item {
+    width: 125px;
+    aspect-ratio: 1 / 1;
+    background-color: cornflowerblue;
+    box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    gap: 5px;
+    color: aliceblue;
+}
+
+.remove-graph-button {
+    cursor: pointer;
+    aspect-ratio: 1 / 1;
+    width: 30px;
+}
+
+a.logout {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }

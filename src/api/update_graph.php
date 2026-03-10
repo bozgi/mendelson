@@ -1,23 +1,21 @@
 <?php
-header('Content-Type: application/json');
-
-$mysqli = new mysqli("mysql", "bozgi", "hujgnuj", "db");
-
-if ($mysqli->connect_error) {
-    echo json_encode([
-        "success" => false,
-        "message" => "DB connection failed: " . $mysqli->connect_error
-    ]);
+session_start();
+if (!isset($_SESSION['id'])) {
+    http_response_code(401);
     exit;
 }
+header('Content-Type: application/json');
+
+require '../db.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {   
     $data = json_decode(file_get_contents('php://input'), true);
-    $day = $data['day'] ?? null;
+    $date = $data['date'] ?? null;
     $temperature = $data['temperature'] ?? null;
     $status = $data['status'] ?? null;
+    $graph_id = $data['graphId'] ?? null;
 
-    if (!$day || $temperature === null || !$status) {
+    if (!$date || ($temperature === null && ($status != 'n/a' && $status != 'sick')) || !$status || !$graph_id) {
         echo json_encode([
             "success" => false,
             "message" => "Missing required fields"
@@ -25,21 +23,26 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit;
     }
 
-    $stmt = $mysqli->prepare("
+    if ($status == 'sick' || $status == 'n/a') {
+        $temperature = null;
+    }
+
+    $stmt = $conn->prepare("
         UPDATE measurements
+        JOIN graphs ON measurements.graph_id = graphs.id
         SET temperature_c = ?, status = ?
-        WHERE day_of_month = ?
+        WHERE measurements.date = ? AND graphs.user_id = ? AND graphs.id = ?
     ");
 
     if (!$stmt) {
         echo json_encode([
             "success" => false,
-            "message" => "Prepare failed: " . $mysqli->error
+            "message" => "Prepare failed: " . $conn->error
         ]);
         exit;
     }
 
-    $stmt->bind_param("dsi", $temperature, $status, $day);
+    $stmt->bind_param("dssii", $temperature, $status, $date, $_SESSION['id'], $graph_id);
 
     if ($stmt->execute()) {
         if ($stmt->affected_rows > 0) {
@@ -61,7 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     $stmt->close();
-    $mysqli->close();
     exit;
 }
 

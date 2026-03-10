@@ -70,13 +70,13 @@ class Chart {
         imagestring($this->image, 7, $x, $y, $text, $this->textColor);
     }
 
-    public function drawGraph() {
+    public function drawGraph($id) {
         $this->drawText($this->xTitle, ($this->graphOriginX + $this->graphWidth / 2) - ($this->fontWidth * strlen($this->xTitle) / 2), $this->height - 30);
         $this->drawTextVertically($this->yTitle, 20, ($this->graphOriginY - $this->graphHeight / 2) + ($this->fontWidth * strlen($this->yTitle) / 2));
 
         $this->drawLine($this->graphOriginX, $this->graphOriginY, $this->graphOriginX + $this->graphWidth, $this->graphOriginY);
         $this->drawLine($this->graphOriginX, $this->graphOriginY, $this->graphOriginX, $this->graphOriginY - $this->graphHeight);
-        $this->fetchData();
+        $this->fetchData($id);
         $this->drawScaleLines();
         $this->drawGridLines();
         $this->plotData();
@@ -86,8 +86,10 @@ class Chart {
         for ($i = 0; $i < count($this->data); $i++) {
             $x = $this->graphOriginX + (($i + 1) * $this->spacingX);
             $this->drawLine($x, $this->graphOriginY + 5, $x, $this->graphOriginY - 5);
-            if (isset($this->data[$i]['day_of_month'])) {
-                $this->drawText($this->data[$i]['day_of_month'], $x - ($this->fontWidth * strlen($this->data[$i]['day_of_month']) / 2), $this->graphOriginY + 5);
+            if (isset($this->data[$i]['date'])) {
+                $date_obj = DateTime::createFromFormat('Y-m-d', $this->data[$i]['date']);
+                $formatted = $date_obj->format('d');
+                $this->drawText($formatted, $x - ($this->fontWidth * strlen($formatted) / 2), $this->graphOriginY + 5);
             }
         }
 
@@ -120,18 +122,39 @@ class Chart {
         return $this->pointData;
     }
 
-    public function fetchData() {
+    public function fetchData($id) {
         require 'db.php';
-        $stmt = $conn->prepare("SELECT * FROM measurements ORDER BY day_of_month ASC");
+        $stmt = $conn->prepare("select m.* from measurements m 
+            join graphs g on
+            g.id = m.graph_id
+            join users u on
+            u.id = g.user_id
+            where g.id = ?
+            order by m.date asc
+        ");
+        $stmt->bind_param("i", $id);
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
             $this->data[] = $row;
         }
         $stmt->close();
-        $this->maxYValue = max(array_column($this->data, 'temperature_c'));
-        $this->minYValue = min(array_filter(array_column($this->data, 'temperature_c')));
+        $temps = array_filter(
+            array_column($this->data, 'temperature_c'),
+            fn($v) => $v !== null
+        );
+
+        if (count($temps) > 0) {
+            $this->maxYValue = max($temps);
+            $this->minYValue = min($temps);
+        } else {
+            $this->maxYValue = 0;
+            $this->minYValue = 0;
+        }
         $dataLength = count($this->data);
+        if ($dataLength == 0) {
+            $dataLength = 1;
+        }
         $this->spacingX = $this->graphWidth / ($dataLength);
         $this->spacingY = $this->graphHeight / $this->numYDivisions;
 
@@ -155,37 +178,41 @@ class Chart {
                 $this->pointData[] = [
                     'x' => $this->graphOriginX + (($i + 1) * $this->spacingX),
                     'y' => $this->graphOriginY,
-                    'day_of_month' => $this->data[$i]['day_of_month'],
+                    'date' => $this->data[$i]['date'],
                     'temperature_c' => $this->data[$i]['temperature_c'],
                     'status' => $this->data[$i]['status']
                 ];
             }
-            if (!isset($this->data[$i]['temperature_c']) || !isset($this->data[$i + 1]['temperature_c'])) {
-                continue;
-            }
-            $this->lineColor = imagecolorallocate($this->image, 0, 0, 255);
             $x1 = $this->graphOriginX + (($i + 1) * $this->spacingX);
-            $y1 = $this->graphOriginY - (($this->data[$i]['temperature_c'] - $this->minYValue) * (($this->graphHeight - $this->spacingY) / ($this->maxYValue - $this->minYValue)) + $this->spacingY);
+            $y1 = $this->graphOriginY - (($this->data[$i]['temperature_c'] - $this->minYValue) * (($this->graphHeight - $this->spacingY) / ($this->maxYValue - $this->minYValue + 0.0000001)) + $this->spacingY);
 
-            $x2 = $this->graphOriginX + (($i + 2) * $this->spacingX);
-            $y2 = $this->graphOriginY - (($this->data[$i + 1]['temperature_c'] - $this->minYValue) * (($this->graphHeight - $this->spacingY) / ($this->maxYValue - $this->minYValue)) + $this->spacingY);
+            $this->pointData[] = [
+                'x' => $x1,
+                'y' => $y1,
+                'date' => $this->data[$i]['date'],
+                'temperature_c' => $this->data[$i]['temperature_c'],
+                'status' => $this->data[$i]['status']
+            ];
+
+            $this->lineColor = imagecolorallocate($this->image, 0, 0, 255);
 
             imagefilledarc($this->image,
                 $x1,
                 $y1,
                 10, 10, 0, 360, $this->lineColor, IMG_ARC_PIE);
+
+            if (!isset($this->data[$i]['temperature_c']) || !isset($this->data[$i + 1]['temperature_c'])) {
+                continue;
+            }
+
+            $x2 = $this->graphOriginX + (($i + 2) * $this->spacingX);
+            $y2 = $this->graphOriginY - (($this->data[$i + 1]['temperature_c'] - $this->minYValue) * (($this->graphHeight - $this->spacingY) / ($this->maxYValue - $this->minYValue)) + $this->spacingY);
+
             imagefilledarc($this->image,
                 $x2,
                 $y2,
                 10, 10, 0, 360, $this->lineColor, IMG_ARC_PIE);
 
-            $this->pointData[] = [
-                'x' => $x1,
-                'y' => $y1,
-                'day_of_month' => $this->data[$i]['day_of_month'],
-                'temperature_c' => $this->data[$i]['temperature_c'],
-                'status' => $this->data[$i]['status']
-            ];
             $this->drawLine($x1, $y1, $x2, $y2, $this->lineStyle);
         }
     }
@@ -194,9 +221,5 @@ class Chart {
         ob_start();
         imagepng($this->image);
         return ob_get_clean();
-    }
-
-    public function __destruct() {
-        imagedestroy($this->image);
     }
 }   
