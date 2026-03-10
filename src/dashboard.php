@@ -19,8 +19,7 @@ if (!isset($_SESSION['id'])) {
     if (isset($_GET["id"])) {
         $id = $_GET["id"];
         echo "<script>
-            const OPEN_GRAPH_ID = $id;
-            let OPEN_GRAPH_BUTTON = null;
+            OPEN_GRAPH_ID = $id;
         </script>";
     }
     ?>
@@ -60,7 +59,7 @@ if (!isset($_SESSION['id'])) {
                 <p>
                     <label>
                     Temperature:
-                    <input type="number" step="0.01" name="temperature" id="temperature">
+                    <input type="text" name="temperature" id="temperature" pattern="^\d*\.?\d*$">
                     </label>
                 </p>
                 <p>

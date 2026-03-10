@@ -1,6 +1,9 @@
 const createGraphButton = document.querySelector('.create-graph-button');
 const removeGraphButtons = document.querySelectorAll('.remove-graph-button');
 
+let OPEN_GRAPH_BUTTON = null;
+let OPEN_GRAPH_ID = null;
+
 createGraphButton.addEventListener('click', () => {
     editDialog.showModal();
 });
@@ -11,6 +14,19 @@ cancel.addEventListener('click', () => {
 
 cancelGraph.addEventListener('click', () => {
     editGraphDialog.close();
+});
+
+temperature.addEventListener('input', () => {
+    let value = temperature.value;
+
+    value = value.replace(/[^0-9.]/g, '');
+
+    const parts = value.split('.');
+    if (parts.length > 2) {
+        value = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    temperature.value = value;
 });
 
 submitGraph.addEventListener('click', () => {
