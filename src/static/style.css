@@ -200,10 +200,13 @@ area {
     color: aliceblue;
 }
 
-.remove-graph-button {
+.remove-graph-button, .graph-item-buttons a {
+    background-color: transparent;
+    border: none;
+    color: white;
     cursor: pointer;
     aspect-ratio: 1 / 1;
-    width: 30px;
+    width: 50px;
 }
 
 a.logout {
@@ -212,4 +215,17 @@ a.logout {
     display: flex;
     align-items: center;
     gap: 5px;
+}
+
+.graph-item-buttons {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.graph-item-buttons a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

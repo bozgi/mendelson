@@ -190,13 +190,23 @@ function loadGraphs() {
                 graphElement.innerHTML = `
                     <p>${graph.start_date}</p>
                     <p>${graph.end_date}</p>
-                    <button class="remove-graph-button" data-id="${graph.id}"><i class="fa-solid fa-trash"></i></button>
+                    <div class="graph-item-buttons">
+                        <a href="api/pdf.php?id=${graph.id}" target="_blank"><i class="fa-solid fa-file-pdf fa-lg"></i></a>
+                        <button class="remove-graph-button" data-id="${graph.id}"><i class="fa-solid fa-trash fa-lg"></i></button>
+                    </div>
                 `;
                 graphElement.dataset.id = graph.id;
                 container.appendChild(graphElement);
+                if (graph.id == OPEN_GRAPH_ID) {
+                    console.log("bingo", graphElement);
+                    OPEN_GRAPH_BUTTON = graphElement;
+                }
             });
             attachGraphListeners();
             attachRemoveButtonListeners();
+            if (OPEN_GRAPH_BUTTON) {
+                OPEN_GRAPH_BUTTON.click();
+            }
         })
         .catch(error => {
             console.error('Error loading graphs:', error);

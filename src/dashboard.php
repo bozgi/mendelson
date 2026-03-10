@@ -1,10 +1,9 @@
 <?php
 session_start();
 if (!isset($_SESSION['id'])) {
-    header("Location: login.php");
+    header("Location: login.php" . (isset($_GET['id']) ? "?id=" . $_GET['id'] : ""));
     exit;
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -16,6 +15,15 @@ if (!isset($_SESSION['id'])) {
     <link rel="stylesheet" href="static/style.css">
     <script src="static/dashboard_script.js" defer></script>
     <script src="https://kit.fontawesome.com/7cfa22db6e.js" crossorigin="anonymous"></script>
+    <?php 
+    if (isset($_GET["id"])) {
+        $id = $_GET["id"];
+        echo "<script>
+            const OPEN_GRAPH_ID = $id;
+            let OPEN_GRAPH_BUTTON = null;
+        </script>";
+    }
+    ?>
 </head>
 <body>
     <div class="container">
