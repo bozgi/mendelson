@@ -1,6 +1,9 @@
 const createGraphButton = document.querySelector('.create-graph-button');
 const removeGraphButtons = document.querySelectorAll('.remove-graph-button');
 
+let OPEN_GRAPH_BUTTON = null;
+let OPEN_GRAPH_ID = null;
+
 createGraphButton.addEventListener('click', () => {
     editDialog.showModal();
 });
