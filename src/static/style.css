@@ -176,8 +176,8 @@ dialog::backdrop {
 }
 
 #graph {
-    width: auto;
-    height: auto;
+    width: 1000px;
+    height: 750px;
     border-radius: 0;
     max-width: 90vw;
     max-height: 90vh;
@@ -201,7 +201,7 @@ area {
     color: aliceblue;
 }
 
-.remove-graph-button, .graph-item-buttons a {
+.remove-graph-button, .edit-graph-button, .graph-item-buttons a {
     background-color: transparent;
     border: none;
     color: white;
@@ -229,4 +229,18 @@ a.logout {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.dialog-date-options {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 5px;
+    align-items: center;
+}
+
+.dialog-date-options label {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
 }

@@ -120,6 +120,8 @@ function attachAreaListeners() {
     const dialog = document.querySelector('#editGraphDialog');
     areas.forEach(area => {
         area.addEventListener('click', () => {
+            console.log("CLICK");
+
             const date = area.dataset.date;
             const temperature = area.dataset.temperature;
             const status = area.dataset.status;
@@ -160,6 +162,29 @@ function loadGraphs() {
                 .catch(error => console.error('Error deleting graph:', error));
             });
         });
+    }
+
+    function attachEditButtonListeners() {
+        const editGraphButton = document.querySelectorAll('.edit-graph-button')
+        editGraphButton.forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.stopPropagation()
+                const graphId = button.dataset.id;
+                const startDate = button.dataset.start;
+                const endDate = button.dataset.end;
+
+                const startInput = document.querySelector(".edit-start-date")
+                const endInput = document.querySelector(".edit-end-date")
+                const editId = document.querySelector(".edit-dialog-id")
+
+                editId.value = graphId
+                startInput.value = startDate;
+                endInput.value = endDate;
+
+                const dialog = document.querySelector(".changeDatesDialog")
+                dialog.showModal();
+            })
+        })
     }
 
     function attachGraphListeners() {
@@ -205,6 +230,7 @@ function loadGraphs() {
                     <p>${graph.end_date}</p>
                     <div class="graph-item-buttons">
                         <a href="api/pdf.php?id=${graph.id}" target="_blank"><i class="fa-solid fa-file-pdf fa-lg"></i></a>
+                        <button class="edit-graph-button" data-id="${graph.id}" data-start="${graph.start_date}" data-end="${graph.end_date}"><i class="fa-solid fa-pen-to-square fa-lg"></i></button>
                         <button class="remove-graph-button" data-id="${graph.id}"><i class="fa-solid fa-trash fa-lg"></i></button>
                     </div>
                 `;
@@ -217,6 +243,7 @@ function loadGraphs() {
             });
             attachGraphListeners();
             attachRemoveButtonListeners();
+            attachEditButtonListeners();
             if (OPEN_GRAPH_BUTTON) {
                 OPEN_GRAPH_BUTTON.click();
             }
@@ -229,3 +256,42 @@ function loadGraphs() {
 document.addEventListener('DOMContentLoaded', () => {
     loadGraphs();
 });
+
+const editOk = document.getElementById("edit-ok");
+const editCancel = document.getElementById("edit-cancel");
+const editDateDialog = document.querySelector(".changeDatesDialog");
+
+editCancel.addEventListener("click", () => {
+    editDateDialog.close();
+})
+
+editOk.addEventListener("click", () => {
+    const startInput = document.querySelector(".edit-start-date")
+    const endInput = document.querySelector(".edit-end-date")
+    const editId = document.querySelector(".edit-dialog-id")
+    const dialogInfo = document.querySelector(".edit-date-dialog-info")
+
+    if (startInput.value > endInput.value) {
+        dialogInfo.innerText = "Podaj prawidłową datę"
+        return
+    }
+
+    fetch("api/edit_graph.php", {
+        method: "POST",
+        body: JSON.stringify({
+            graphId: editId.value,
+            startDate: startInput.value,
+            endDate: endInput.value
+        })
+    }).then(response => response.json())
+    .then(json => {
+        if (json.success) {
+            location.reload()
+        } else {
+            dialogInfo.innerText = "Wystąpił błąd!"
+        }
+    })
+
+    console.log("OK");
+    
+})

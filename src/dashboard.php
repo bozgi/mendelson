@@ -49,6 +49,23 @@ if (!isset($_SESSION['id'])) {
             </form>
 
         </dialog>
+        <dialog class="changeDatesDialog">
+            <div class="dialog-date-options">
+                    <label>
+                        Początek zakresu:
+                        <input type="date" name="editStartDate" class="edit-start-date">
+                    </label>
+                    <label>
+                        Koniec zakresu:
+                        <input type="date" style="display: hidden;" name="editEndDate" class="edit-end-date">
+                        <input type="hidden" class="edit-dialog-id">
+                    </label>
+                    <p class="edit-date-dialog-info"></p>
+                </div>
+                <button type="button" id="edit-ok">Ok</button>
+                <button type="button" id="edit-cancel">Anuluj</button>
+
+        </dialog>
         <dialog class="graphDialog">
             <map name="graph-map">
             </map>
