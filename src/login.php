@@ -164,7 +164,7 @@ if (isset($_GET["operation"])) {
                 <div class="login-bar">
                     <div><i class="fa-solid fa-arrow-right-to-bracket"></i>Zaloguj się</div>
                 </div>
-                <div class="logo-bar"><strong>Wiggatronics</strong></div>
+                <div class="logo-bar"><strong>Wykresiki</strong></div>
                 <nav>
                     <div class="option selected login-button">Zaloguj</div>
                     <div class="option register-button">Utwórz konto</div>

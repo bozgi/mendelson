@@ -13,17 +13,20 @@ if (!isset($_SESSION['id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel wykresów</title>
     <link rel="stylesheet" href="static/style.css">
-    <script src="static/dashboard_script.js" defer></script>
     <script src="https://kit.fontawesome.com/7cfa22db6e.js" crossorigin="anonymous"></script>
+    <script>
+        let OPEN_GRAPH_ID = null;
+        let OPEN_GRAPH_BUTTON = null;
+    </script>
     <?php 
     if (isset($_GET["id"])) {
         $id = $_GET["id"];
         echo "<script>
-            const OPEN_GRAPH_ID = $id;
-            let OPEN_GRAPH_BUTTON = null;
-        </script>";
+                OPEN_GRAPH_ID = $id;
+            </script>";
     }
     ?>
+    <script src="static/dashboard_script.js" defer></script>
 </head>
 <body>
     <div class="container">
@@ -60,7 +63,7 @@ if (!isset($_SESSION['id'])) {
                 <p>
                     <label>
                     Temperature:
-                    <input type="number" step="0.01" name="temperature" id="temperature">
+                    <input type="text" name="temperature" id="temperature" pattern="^\d*\.?\d*$">
                     </label>
                 </p>
                 <p>
@@ -85,7 +88,7 @@ if (!isset($_SESSION['id'])) {
                 <div class="login-bar">
                     <div><a class="logout" href="logout.php"><i class="fa-solid fa-arrow-right-from-bracket"></i><?php echo $_SESSION['email']; ?></a></div>
                 </div>
-                <div class="logo-bar"><strong>Wiggatronics</strong></div>
+                <div class="logo-bar"><strong>Wykresiki</strong></div>
                 <nav>
                 </nav>
             </div>

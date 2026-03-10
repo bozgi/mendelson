@@ -13,6 +13,19 @@ cancelGraph.addEventListener('click', () => {
     editGraphDialog.close();
 });
 
+temperature.addEventListener('input', () => {
+    let value = temperature.value;
+
+    value = value.replace(/[^0-9.]/g, '');
+
+    const parts = value.split('.');
+    if (parts.length > 2) {
+        value = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    temperature.value = value;
+});
+
 submitGraph.addEventListener('click', () => {
     fetch("api/update_graph.php", {
         method: "POST",
@@ -83,7 +96,7 @@ ok.addEventListener('click', () => {
         })
     })
     .then(response => response.json())
-    .then(data => console.log(data))
+    .then(() => location.reload())
 
 });
 
