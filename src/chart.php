@@ -186,6 +186,10 @@ class Chart {
             $x1 = $this->graphOriginX + (($i + 1) * $this->spacingX);
             $y1 = $this->graphOriginY - (($this->data[$i]['temperature_c'] - $this->minYValue) * (($this->graphHeight - $this->spacingY) / ($this->maxYValue - $this->minYValue + 0.0000001)) + $this->spacingY);
 
+            if (!isset($this->data[$i]['temperature_c'])) {
+                continue;
+            }
+
             $this->pointData[] = [
                 'x' => $x1,
                 'y' => $y1,
@@ -201,7 +205,7 @@ class Chart {
                 $y1,
                 10, 10, 0, 360, $this->lineColor, IMG_ARC_PIE);
 
-            if (!isset($this->data[$i]['temperature_c']) || !isset($this->data[$i + 1]['temperature_c'])) {
+            if (!isset($this->data[$i + 1]['temperature_c'])) {
                 continue;
             }
 
